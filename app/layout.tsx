@@ -1,3 +1,4 @@
+import Navbar from "@/components/navbar";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -27,7 +28,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+     <body className="bg-[radial-gradient(circle_at_top,#1e293b_0%,#09090b_45%,#000000_100%)]">
+  <Navbar />
+  {children}
+</body>
     </html>
   );
 }
