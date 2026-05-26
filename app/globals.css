@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fffaf5;
+  --foreground: #1c1917;
 }
 
 @theme inline {
@@ -12,15 +12,53 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  color: #78716c;
+}
+
+.panel-title {
+  font-size: clamp(1.85rem, 4.2vw, 3rem);
+  font-weight: 950;
+  line-height: 1.08;
+  letter-spacing: 0;
+  color: #1c1917;
+}
+
+.input-shell {
+  width: 100%;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.72);
+  padding: 1rem 1.1rem;
+  color: #1c1917;
+  outline: none;
+  box-shadow: 0 18px 45px rgba(28, 25, 23, 0.06);
+  transition: border-color 180ms ease, background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.input-shell::placeholder {
+  color: #a8a29e;
+}
+
+.input-shell:focus {
+  border-color: rgba(232, 93, 117, 0.55);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 0 4px rgba(232, 93, 117, 0.13), 0 22px 55px rgba(28, 25, 23, 0.1);
+  transform: translateY(-1px);
 }
