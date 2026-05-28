@@ -10,6 +10,8 @@ export type RelationshipType =
 
 export type GiftInput = {
   recipientName: string;
+  age: string;
+  gender: string;
   relationship: RelationshipType;
   occasion: string;
   budget: string;
@@ -26,6 +28,7 @@ export type GiftResult = {
   recommendationStyle: string;
   emotionalStrategy: string;
   deliveryNote: string;
+  giftNote: string;
   backupIdeas: string[];
 };
 

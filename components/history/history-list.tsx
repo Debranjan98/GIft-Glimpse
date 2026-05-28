@@ -3,8 +3,13 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { fetchGiftHistory, GiftHistoryItem } from "@/lib/supabase/queries";
+import {
+  deleteGiftResult,
+  fetchGiftHistory,
+  GiftHistoryItem,
+} from "@/lib/supabase/queries";
 import { GiftResult } from "@/lib/gift/schema";
+import { getCurrentUser } from "@/lib/supabase/auth";
 
 function parseResult(value: string): Partial<GiftResult> {
   try {
@@ -17,10 +22,23 @@ function parseResult(value: string): Partial<GiftResult> {
 export default function HistoryList() {
   const [items, setItems] = useState<GiftHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function load() {
-      const { data } = await fetchGiftHistory();
+      const user = await getCurrentUser();
+      setSignedIn(Boolean(user));
+
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      const { data, error: historyError } = await fetchGiftHistory();
+      if (historyError) {
+        setError(historyError.message);
+      }
       setItems((data || []) as GiftHistoryItem[]);
       setLoading(false);
     }
@@ -34,11 +52,11 @@ export default function HistoryList() {
         <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="eyebrow">Gift memory archive</p>
-            <h1 className="mt-2 text-4xl font-black tracking-tight sm:text-6xl">
-              History with emotional context.
+            <h1 className="mt-2 max-w-3xl text-[2.35rem] font-black leading-[1.06] tracking-tight sm:text-[4rem]">
+              Your private gift history.
             </h1>
-            <p className="mt-4 max-w-2xl text-lg leading-8 text-stone-600">
-              Scan past ideas by relationship, emotional tone, and the core recommendation.
+            <p className="mt-4 max-w-2xl text-base leading-8 text-stone-600 sm:text-lg">
+              Revisit saved reads, gift notes, and the emotional reasoning behind each idea.
             </p>
           </div>
           <Link
@@ -49,13 +67,34 @@ export default function HistoryList() {
           </Link>
         </div>
 
-        {loading && (
+        {signedIn === false && (
+          <div className="rounded-[2rem] border border-white/70 bg-white/75 p-8 text-center shadow-xl shadow-black/5">
+            <h2 className="text-2xl font-black">Sign in to view history</h2>
+            <p className="mx-auto mt-3 max-w-md leading-7 text-stone-600">
+              Gift history is private and only visible to the account that created it.
+            </p>
+            <Link
+              href="/auth?next=/history"
+              className="mt-6 inline-flex rounded-2xl bg-stone-950 px-5 py-4 font-bold text-white"
+            >
+              Sign in
+            </Link>
+          </div>
+        )}
+
+        {error && (
+          <div className="mb-5 rounded-[1.5rem] bg-rose-50 p-4 text-sm font-semibold text-rose-700">
+            {error}
+          </div>
+        )}
+
+        {loading && signedIn !== false && (
           <div className="rounded-[2rem] bg-white/70 p-8 text-stone-600 shadow-xl shadow-black/5">
             Loading your gift history...
           </div>
         )}
 
-        {!loading && items.length === 0 && (
+        {!loading && signedIn && items.length === 0 && (
           <div className="rounded-[2rem] border border-white/70 bg-white/70 p-8 text-center shadow-xl shadow-black/5">
             <h2 className="text-2xl font-black">No gift reads yet</h2>
             <p className="mx-auto mt-3 max-w-md leading-7 text-stone-600">
@@ -65,10 +104,11 @@ export default function HistoryList() {
         )}
 
         <div className="grid gap-4">
-          {items.map((item, index) => {
+          {signedIn && items.map((item, index) => {
             const parsed = parseResult(item.result);
             const primaryIdea = item.primary_idea || parsed.primaryIdea;
             const direction = parsed.giftDirection || item.result;
+            const giftNote = parsed.giftNote;
 
             return (
               <motion.article
@@ -100,6 +140,23 @@ export default function HistoryList() {
                       {[item.occasion, item.budget].filter(Boolean).join(" | ")}
                     </p>
                   )}
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const { error: deleteError } = await deleteGiftResult(item.id);
+                      if (deleteError) {
+                        setError(deleteError.message);
+                        return;
+                      }
+
+                      setItems((current) =>
+                        current.filter((historyItem) => historyItem.id !== item.id)
+                      );
+                    }}
+                    className="mt-5 rounded-full border border-stone-200 bg-white/70 px-4 py-2 text-sm font-bold text-stone-500 transition hover:bg-white hover:text-rose-700"
+                  >
+                    Delete
+                  </button>
                 </div>
 
                 <div className="space-y-4">
@@ -119,6 +176,14 @@ export default function HistoryList() {
                       {direction}
                     </p>
                   </div>
+                  {giftNote && (
+                    <div className="rounded-2xl bg-amber-50 p-4">
+                      <p className="text-xs font-bold uppercase text-amber-700/60">
+                        Note idea
+                      </p>
+                      <p className="mt-2 leading-7 text-stone-700">{giftNote}</p>
+                    </div>
+                  )}
                 </div>
               </motion.article>
             );

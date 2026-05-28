@@ -16,6 +16,7 @@ type RelationshipStrategy = {
   primary: string;
   why: string;
   delivery: string;
+  note: string;
   backups: string[];
 };
 
@@ -29,6 +30,8 @@ const relationshipStrategies: Record<RelationshipType, RelationshipStrategy> = {
       "For a partner, the gift should not just say I love you. It should say I have been paying attention while our life was happening.",
     delivery:
       "Give it in a quiet moment, not in front of people. Let the first note be simple and specific.",
+    note:
+      "I wanted this to feel less like a gift and more like proof that I have been noticing our life while it is happening.",
     backups: [
       "a printed photo timeline with one sentence under each image",
       "a date built around a memory they mentioned once",
@@ -44,6 +47,8 @@ const relationshipStrategies: Record<RelationshipType, RelationshipStrategy> = {
       "Parent gifts land when they turn appreciation from a general thank you into evidence: this is what I saw, this is what stayed with me.",
     delivery:
       "Do not overperform the emotion. Hand it over with a grounded line about one thing they did that still matters.",
+    note:
+      "I do not say this enough, but there are things I carry well because you carried them first.",
     backups: [
       "a framed family photo with a handwritten note on the back",
       "a comfort day planned around their pace, not yours",
@@ -59,6 +64,8 @@ const relationshipStrategies: Record<RelationshipType, RelationshipStrategy> = {
       "Best-friend gifts work when humor opens the door and sincerity walks in quietly after it.",
     delivery:
       "Let the first reaction be laughter. Then include one sentence they can reread when they need to feel less alone.",
+    note:
+      "This is partly a joke because we are us, but mostly it is proof that I am still grateful I get to know you this well.",
     backups: [
       "a custom memory deck with prompts only the two of you would understand",
       "a surprise plan built around an old shared obsession",
@@ -74,6 +81,8 @@ const relationshipStrategies: Record<RelationshipType, RelationshipStrategy> = {
       "Siblings often trust affection more when it arrives with a wink. The right gift says I know where we came from without forcing a speech.",
     delivery:
       "Keep the handoff casual. Put the real emotional sentence in the card so they can absorb it privately.",
+    note:
+      "This made me think of where we came from, and of the fact that I am still quietly glad it was with you.",
     backups: [
       "a useful upgrade tied to an old shared habit",
       "a small archive of childhood photos with dry captions",
@@ -89,6 +98,8 @@ const relationshipStrategies: Record<RelationshipType, RelationshipStrategy> = {
       "Mentor gifts are strongest when the object is restrained and the words carry the weight.",
     delivery:
       "Keep the note concise and specific. Avoid flattery; describe the change their guidance made possible.",
+    note:
+      "I wanted to mark the specific impact your guidance had on me, not with a grand gesture, but with something considered.",
     backups: [
       "a refined desk object connected to their craft",
       "a book with a margin note about what they helped you understand",
@@ -104,6 +115,8 @@ const relationshipStrategies: Record<RelationshipType, RelationshipStrategy> = {
       "For a colleague, emotional intelligence is restraint. The best recommendation feels observant, useful, and easy to receive.",
     delivery:
       "Give it with a short line about what they consistently bring to the team.",
+    note:
+      "I wanted to acknowledge the way you make the work feel better without making a big production of it.",
     backups: [
       "a premium coffee or tea set matched to their routine",
       "a clean desk object with a small note",
@@ -119,6 +132,8 @@ const relationshipStrategies: Record<RelationshipType, RelationshipStrategy> = {
       "Children remember gifts that make them feel recognized, not just occupied.",
     delivery:
       "Let the reveal feel like an invitation: I saw this and thought of the kind of person you are becoming.",
+    note:
+      "I chose this because it reminded me of who you are becoming, and I love getting to notice that.",
     backups: [
       "a creative kit connected to their obsession",
       "an experience where they get to lead",
@@ -134,6 +149,8 @@ const relationshipStrategies: Record<RelationshipType, RelationshipStrategy> = {
       "Long-distance gifts are believable when they give the relationship a rhythm across space.",
     delivery:
       "Send the first piece with a date or time attached so the gift becomes something you both enter together.",
+    note:
+      "I wanted this to make an ordinary moment feel a little closer to shared, even from far away.",
     backups: [
       "paired mugs, playlists, or lamps tied to a weekly ritual",
       "a set of open-when notes for specific missed moments",
@@ -228,6 +245,72 @@ function budgetLanguage(budget: string) {
   return "Higher spend should buy care, craft, or experience quality, not emotional volume.";
 }
 
+function ageContext(age: string) {
+  const numericAge = Number(age);
+  if (!Number.isFinite(numericAge) || numericAge <= 0) {
+    return {
+      label: "age not specified",
+      guidance:
+        "Do not assume a life stage; keep the recommendation flexible and based on the relationship signals.",
+    };
+  }
+
+  if (numericAge < 13) {
+    return {
+      label: "child",
+      guidance:
+        "Prioritize wonder, confidence, safe creativity, and a gift they can use with guidance.",
+    };
+  }
+
+  if (numericAge < 20) {
+    return {
+      label: "teen",
+      guidance:
+        "Avoid anything patronizing. Choose something identity-building, social, creative, or independence-supporting.",
+    };
+  }
+
+  if (numericAge < 35) {
+    return {
+      label: "young adult",
+      guidance:
+        "Favor taste, identity, experiences, usefulness, and gifts that fit an active changing life.",
+    };
+  }
+
+  if (numericAge < 55) {
+    return {
+      label: "midlife adult",
+      guidance:
+        "Favor quality, relief, meaning, refined usefulness, and time-saving care over novelty.",
+    };
+  }
+
+  return {
+    label: "older adult",
+    guidance:
+      "Favor comfort, legacy, ease, family connection, quality, and gifts that do not create extra work.",
+  };
+}
+
+function genderContext(gender: string) {
+  if (!gender || gender === "Prefer not to say") {
+    return "Do not gender the gift; infer taste from the selected emotional signals.";
+  }
+
+  return `Gender context: ${gender}. Use it only to avoid mismatched assumptions; do not rely on stereotypes.`;
+}
+
+function lifeStageSentence(age: string) {
+  const lifeStage = ageContext(age);
+  if (lifeStage.label === "age not specified") {
+    return lifeStage.guidance;
+  }
+
+  return `Because they are a ${lifeStage.label}, the idea should be calibrated this way: ${lifeStage.guidance}`;
+}
+
 function sentenceList(items: string[]) {
   const unique = [...new Set(items.filter(Boolean))];
   if (unique.length === 0) return "the signals you chose";
@@ -250,12 +333,13 @@ function contextLine(input: GiftInput) {
 function refinePrimaryIdea(input: GiftInput, baseIdea: string) {
   const signals = sentenceList([...input.personalityTraits, ...input.emotionalSignals]);
   const context = input.emotionalContext.trim();
+  const lifeStage = ageContext(input.age);
 
   if (!context) {
-    return `${baseIdea} Build it around ${signals}, then add one concrete detail before giving it.`;
+    return `${baseIdea} Adapt it for a ${lifeStage.label}: ${lifeStage.guidance} Build it around ${signals}, then add one concrete detail before giving it.`;
   }
 
-  return `${baseIdea} Use the detail about "${context}" as the emotional proof, not as decoration.`;
+  return `${baseIdea} Adapt it for a ${lifeStage.label}: ${lifeStage.guidance} Use the detail about "${context}" as the emotional proof, not as decoration.`;
 }
 
 function refineBackupIdeas(backups: string[], occasion: OccasionStrategy) {
@@ -274,14 +358,15 @@ export async function generateGiftIdea(input: GiftInput): Promise<GiftResult> {
 
   return {
     emotionalHeadline: `${profile.shortLabel} read for ${recipient}`,
-    giftDirection: `${relationship.insight} ${occasion.frame}`,
+    giftDirection: `${relationship.insight} ${occasion.frame} ${lifeStageSentence(input.age)}`,
     primaryIdea: refinePrimaryIdea(input, relationship.primary),
-    whyItFits: `${relationship.why} The choices point toward ${emotionalSignals}, so the gift should feel observed rather than impressive. ${budgetLanguage(
+    whyItFits: `${relationship.why} The choices point toward ${emotionalSignals}, so the gift should feel observed rather than impressive. ${genderContext(input.gender)} ${budgetLanguage(
       input.budget
     )}`,
     recommendationStyle: `${profile.recommendationStyle}. The key constraint: ${occasion.risk}.`,
     emotionalStrategy: `${contextLine(input)} Let the object be simple enough that the emotional read stays in focus.`,
     deliveryNote: `${relationship.delivery} ${occasion.delivery}`,
+    giftNote: relationship.note,
     backupIdeas: refineBackupIdeas(relationship.backups, occasion),
   };
 }

@@ -8,11 +8,14 @@ import {
   GiftResult,
   getRelationshipProfile,
 } from "@/lib/gift/schema";
+import { getCurrentUser } from "@/lib/supabase/auth";
 
 type StoredResult = {
   input: GiftInput;
   result: GiftResult;
 };
+
+type Refinement = "emotional" | "practical" | "cheaper" | "safer";
 
 const revealSteps = [
   "Reading the relationship signal",
@@ -28,7 +31,17 @@ export default function ResultReveal() {
     const raw = window.localStorage.getItem("gift-glimpse-result");
     return raw ? JSON.parse(raw) : null;
   });
+  const [refinement, setRefinement] = useState<Refinement | null>(null);
+  const [hasUser, setHasUser] = useState<boolean | null>(null);
+  const [hasPendingSave] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return Boolean(window.localStorage.getItem("gift-glimpse-pending-save"));
+  });
   const [phase, setPhase] = useState(0);
+
+  useEffect(() => {
+    getCurrentUser().then((user) => setHasUser(Boolean(user)));
+  }, []);
 
   useEffect(() => {
     if (phase >= revealSteps.length) return;
@@ -56,9 +69,11 @@ export default function ResultReveal() {
     );
   }
 
-  const { input, result } = stored;
+  const { input } = stored;
+  const result = normalizeResult(stored.result);
   const profile = getRelationshipProfile(input.relationship);
   const revealComplete = phase >= revealSteps.length;
+  const refinedResult = refineResult(result, refinement);
 
   return (
     <main className={`min-h-screen bg-gradient-to-br ${profile.softGradient} px-4 py-8 text-stone-950 sm:px-6 lg:px-8`}>
@@ -95,25 +110,45 @@ export default function ResultReveal() {
                   Gift Glimpse reveal
                 </p>
                 <h1 className="mt-3 text-4xl font-black leading-tight sm:text-6xl">
-                  {result.emotionalHeadline}
+                  {refinedResult.emotionalHeadline}
                 </h1>
               </div>
 
               <div className="grid gap-5 p-5 sm:p-8 lg:grid-cols-[1.05fr_0.95fr]">
                 <div className="space-y-5">
-                  <ResultBlock title="Gift Direction" body={result.giftDirection} />
-                  <ResultBlock title="Primary Idea" body={result.primaryIdea} featured />
-                  <ResultBlock title="Why This Fits" body={result.whyItFits} />
+                  <ResultBlock title="Emotional Read" body={refinedResult.giftDirection} />
+                  <ResultBlock title="Best Gift Direction" body={refinedResult.primaryIdea} featured />
+                  <ResultBlock title="Why This Works" body={refinedResult.whyItFits} />
                 </div>
                 <div className="space-y-5">
-                  <ResultBlock title="Emotional Strategy" body={result.emotionalStrategy} />
-                  <ResultBlock title="How To Give It" body={result.deliveryNote} />
                   <div className="rounded-[1.5rem] border border-stone-200 bg-white p-5">
                     <h2 className="text-lg font-black text-stone-950">
-                      Backup Ideas
+                      Adjust The Direction
+                    </h2>
+                    <div className="mt-4 grid grid-cols-2 gap-2">
+                      <RefineButton active={refinement === "emotional"} onClick={() => setRefinement("emotional")}>
+                        More emotional
+                      </RefineButton>
+                      <RefineButton active={refinement === "practical"} onClick={() => setRefinement("practical")}>
+                        More practical
+                      </RefineButton>
+                      <RefineButton active={refinement === "cheaper"} onClick={() => setRefinement("cheaper")}>
+                        Lower cost
+                      </RefineButton>
+                      <RefineButton active={refinement === "safer"} onClick={() => setRefinement("safer")}>
+                        Safer option
+                      </RefineButton>
+                    </div>
+                  </div>
+                  <ResultBlock title="How To Give It" body={refinedResult.deliveryNote} />
+                  <ResultBlock title="Gift Note" body={refinedResult.giftNote} featured />
+                  <ResultBlock title="Emotional Strategy" body={refinedResult.emotionalStrategy} />
+                  <div className="rounded-[1.5rem] border border-stone-200 bg-white p-5">
+                    <h2 className="text-lg font-black text-stone-950">
+                      Safer Alternatives
                     </h2>
                     <div className="mt-4 space-y-3">
-                      {result.backupIdeas.map((idea) => (
+                      {refinedResult.backupIdeas.map((idea) => (
                         <div
                           key={idea}
                           className="rounded-2xl bg-stone-100 px-4 py-3 text-sm font-bold text-stone-700"
@@ -133,18 +168,110 @@ export default function ResultReveal() {
                 >
                   Create another
                 </Link>
-                <Link
-                  href="/history"
-                  className="rounded-2xl border border-stone-300 bg-white px-5 py-4 text-center font-bold text-stone-800"
-                >
-                  View history
-                </Link>
+                {hasUser ? (
+                  <Link
+                    href="/history"
+                    className="rounded-2xl border border-stone-300 bg-white px-5 py-4 text-center font-bold text-stone-800"
+                  >
+                    View history
+                  </Link>
+                ) : (
+                  <Link
+                    href="/auth?next=/result"
+                    className="rounded-2xl border border-stone-300 bg-white px-5 py-4 text-center font-bold text-stone-800"
+                  >
+                    {hasPendingSave ? "Sign in to save" : "Sign in"}
+                  </Link>
+                )}
               </div>
             </motion.div>
           )}
         </div>
       </section>
     </main>
+  );
+}
+
+function normalizeResult(result: GiftResult): GiftResult {
+  return {
+    ...result,
+    giftNote:
+      result.giftNote ||
+      "I chose this because I wanted it to feel specific to you, not just appropriate for the occasion.",
+    backupIdeas: result.backupIdeas || [],
+  };
+}
+
+function refineResult(result: GiftResult, refinement: Refinement | null): GiftResult {
+  if (!refinement) return result;
+
+  const copy = { ...result, backupIdeas: [...result.backupIdeas] };
+
+  if (refinement === "emotional") {
+    return {
+      ...copy,
+      primaryIdea: `${result.primaryIdea} Add a handwritten note as the emotional centerpiece, and make the object feel secondary to the recognition.`,
+      deliveryNote: `${result.deliveryNote} Pause before explaining it; let them discover the personal detail first.`,
+      giftNote: `${result.giftNote} I chose this because I wanted you to feel seen, not simply celebrated.`,
+    };
+  }
+
+  if (refinement === "practical") {
+    return {
+      ...copy,
+      primaryIdea: `${result.primaryIdea} Choose the most usable version of this idea so it becomes part of their real routine.`,
+      whyItFits: `${result.whyItFits} The practical version works because usefulness can still carry emotional care when the reason is specific.`,
+      backupIdeas: result.backupIdeas.map((idea) => `${idea}, but choose the version they would actually use weekly`),
+    };
+  }
+
+  if (refinement === "cheaper") {
+    return {
+      ...copy,
+      primaryIdea: `Make a lower-cost version: ${result.primaryIdea} Keep the spend modest and put the effort into specificity, packaging, and the note.`,
+      whyItFits: `${result.whyItFits} A smaller gift can feel more intimate when it proves attention instead of budget.`,
+      backupIdeas: [
+        "a handwritten letter paired with one symbolic object",
+        "a printed photo or memory card set",
+        "a planned hour together built around something they love",
+      ],
+    };
+  }
+
+  return {
+    ...copy,
+    primaryIdea: `Choose the safest version: a personal note plus one useful, tasteful item connected to the emotional read.`,
+    whyItFits: `${result.whyItFits} This lowers the risk of feeling too intense while preserving the sense of being understood.`,
+    deliveryNote: "Keep the handoff simple. Say why you chose it in one sentence, then let the note carry the rest.",
+    backupIdeas: [
+      "a premium consumable matched to their taste",
+      "a simple keepsake with one private reference",
+      "a low-pressure experience they can use when ready",
+    ],
+  };
+}
+
+function RefineButton({
+  active,
+  children,
+  onClick,
+}: {
+  active: boolean;
+  children: React.ReactNode;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-2xl px-3 py-3 text-sm font-bold transition ${
+        active
+          ? "bg-stone-950 text-white shadow-lg shadow-black/15"
+          : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+      }`}
+    >
+      {children}
+    </button>
   );
 }
 

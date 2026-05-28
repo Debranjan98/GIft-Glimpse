@@ -1,0 +1,118 @@
+
+> gift-glimpse-app@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.4:3000
+- Environments: .env.local
+✓ Ready in 10.9s
+
+○ Compiling /gift ...
+ GET /gift 200 in 36.6s (next.js: 35.0s, application-code: 1589ms)
+ GET /gift 200 in 23.8s (next.js: 22.3s, application-code: 1510ms)
+ GET /auth?next=%2Fhistory 200 in 1969ms (next.js: 1876ms, application-code: 94ms)
+ GET /gift 200 in 65ms (next.js: 7ms, application-code: 58ms)
+ POST /api/gift 200 in 2.5s (next.js: 2.4s, application-code: 101ms)
+○ Compiling /result ...
+ GET /result 200 in 4.3s (next.js: 4.2s, application-code: 121ms)
+ GET /result 200 in 913ms (next.js: 709ms, application-code: 204ms)
+✓ Compiled in 456ms
+ GET /result 200 in 248ms (next.js: 149ms, application-code: 99ms)
+ GET /result 200 in 157ms (next.js: 9ms, application-code: 148ms)
+✓ Compiled in 592ms
+✓ Compiled in 247ms
+ GET /result 200 in 406ms (next.js: 281ms, application-code: 125ms)
+✓ Compiled in 282ms
+ GET /result 200 in 350ms (next.js: 194ms, application-code: 156ms)
+✓ Compiled in 165ms
+ GET /result 200 in 499ms (next.js: 337ms, application-code: 162ms)
+✓ Compiled in 274ms
+✓ Compiled in 621ms
+ GET /result 200 in 329ms (next.js: 155ms, application-code: 174ms)
+ GET /result 200 in 323ms (next.js: 11ms, application-code: 312ms)
+ GET /result 200 in 370ms (next.js: 8ms, application-code: 362ms)
+ GET /result 200 in 311ms (next.js: 12ms, application-code: 299ms)
+ GET /result 200 in 312ms (next.js: 56ms, application-code: 256ms)
+ GET /result 200 in 385ms (next.js: 105ms, application-code: 280ms)
+ GET /result 200 in 234ms (next.js: 12ms, application-code: 223ms)
+ GET /result 200 in 178ms (next.js: 8ms, application-code: 170ms)
+ GET /result 200 in 396ms (next.js: 13ms, application-code: 382ms)
+ GET /result 200 in 365ms (next.js: 13ms, application-code: 351ms)
+ GET /result 200 in 392ms (next.js: 75ms, application-code: 317ms)
+ GET /result 200 in 462ms (next.js: 149ms, application-code: 314ms)
+ GET /result 200 in 527ms (next.js: 215ms, application-code: 312ms)
+ GET /result 200 in 476ms (next.js: 13ms, application-code: 463ms)
+ GET /result 200 in 545ms (next.js: 233ms, application-code: 312ms)
+ GET /result 200 in 265ms (next.js: 10ms, application-code: 255ms)
+ GET /result 200 in 264ms (next.js: 69ms, application-code: 195ms)
+ GET /result 200 in 268ms (next.js: 134ms, application-code: 134ms)
+ GET /result 200 in 267ms (next.js: 196ms, application-code: 71ms)
+ GET /result 200 in 120ms (next.js: 20ms, application-code: 101ms)
+ GET /result 200 in 431ms (next.js: 243ms, application-code: 188ms)
+ GET /result 200 in 100ms (next.js: 15ms, application-code: 85ms)
+ GET /result 200 in 65ms (next.js: 17ms, application-code: 48ms)
+ GET /result 200 in 59ms (next.js: 6ms, application-code: 53ms)
+ GET /result 200 in 91ms (next.js: 15ms, application-code: 76ms)
+ GET /result 200 in 159ms (next.js: 9ms, application-code: 149ms)
+ GET /result 200 in 363ms (next.js: 9ms, application-code: 354ms)
+ GET /result 200 in 287ms (next.js: 10ms, application-code: 277ms)
+ GET /result 200 in 288ms (next.js: 61ms, application-code: 226ms)
+ GET /result 200 in 293ms (next.js: 132ms, application-code: 161ms)
+ GET /result 200 in 376ms (next.js: 203ms, application-code: 173ms)
+ GET /result 200 in 110ms (next.js: 36ms, application-code: 75ms)
+ GET /result 200 in 390ms (next.js: 17ms, application-code: 372ms)
+ GET /result 200 in 382ms (next.js: 55ms, application-code: 327ms)
+ GET /result 200 in 388ms (next.js: 115ms, application-code: 273ms)
+ GET /result 200 in 404ms (next.js: 190ms, application-code: 214ms)
+ GET /result 200 in 407ms (next.js: 255ms, application-code: 153ms)
+ GET /result 200 in 407ms (next.js: 326ms, application-code: 81ms)
+ GET /result 200 in 320ms (next.js: 12ms, application-code: 309ms)
+ GET /result 200 in 318ms (next.js: 115ms, application-code: 203ms)
+ GET /result 200 in 325ms (next.js: 63ms, application-code: 262ms)
+ GET /result 200 in 330ms (next.js: 183ms, application-code: 147ms)
+✓ Finished filesystem cache database compaction in 29.7s
+ GET /result 200 in 2.9s (next.js: 31ms, application-code: 2.9s)
+○ Compiling / ...
+ GET /test-ai 307 in 12.1s (next.js: 11.6s, application-code: 517ms)
+ GET / 200 in 13.9s (next.js: 13.6s, application-code: 331ms)
+ GET /gift 200 in 1790ms (next.js: 741ms, application-code: 1049ms)
+✓ Finished writing to filesystem cache in 13.8s
+ POST /api/gift 200 in 888ms (next.js: 821ms, application-code: 67ms)
+ GET /result 200 in 90ms (next.js: 29ms, application-code: 61ms)
+ GET /gift 200 in 68ms (next.js: 14ms, application-code: 54ms)
+ GET /auth?next=%2Fhistory 200 in 955ms (next.js: 796ms, application-code: 159ms)
+○ Compiling /history ...
+ GET /history 200 in 12.7s (next.js: 12.7s, application-code: 75ms)
+ GET /history 200 in 100ms (next.js: 9ms, application-code: 91ms)
+ GET /auth?next=%2Fhistory 200 in 49ms (next.js: 7ms, application-code: 42ms)
+ GET /auth?next=%2Fhistory 200 in 51ms (next.js: 6ms, application-code: 45ms)
+ GET /auth?next=%2Fhistory 200 in 64ms (next.js: 5ms, application-code: 58ms)
+✓ Finished filesystem cache database compaction in 14.7s
+ GET / 200 in 166ms (next.js: 61ms, application-code: 105ms)
+ GET /gift 200 in 60ms (next.js: 13ms, application-code: 47ms)
+✓ Finished filesystem cache database compaction in 14.2s
+ GET /auth?next=%2Fhistory 200 in 54ms (next.js: 7ms, application-code: 47ms)
+ GET /auth?next=%2Fhistory 200 in 48ms (next.js: 6ms, application-code: 42ms)
+ GET /auth?next=/history 200 in 5.0s (next.js: 17ms, application-code: 5.0s)
+ GET /history 200 in 165ms (next.js: 24ms, application-code: 142ms)
+ GET /history 200 in 107ms (next.js: 11ms, application-code: 96ms)
+ GET /auth?next=%2Fhistory 200 in 43ms (next.js: 6ms, application-code: 37ms)
+ GET /history 200 in 162ms (next.js: 8ms, application-code: 154ms)
+ GET /history 200 in 103ms (next.js: 8ms, application-code: 96ms)
+ GET /gift 200 in 55ms (next.js: 9ms, application-code: 46ms)
+ POST /api/gift 200 in 194ms (next.js: 47ms, application-code: 147ms)
+ GET /result 200 in 204ms (next.js: 17ms, application-code: 187ms)
+ GET /history 200 in 130ms (next.js: 40ms, application-code: 89ms)
+ GET / 200 in 44ms (next.js: 8ms, application-code: 37ms)
+ GET /gift 200 in 54ms (next.js: 9ms, application-code: 45ms)
+✓ Compiled in 2.7s
+ GET /gift 200 in 2.2s (next.js: 1931ms, application-code: 264ms)
+ GET /gift 200 in 300ms (next.js: 181ms, application-code: 119ms)
+ GET /gift 200 in 278ms (next.js: 157ms, application-code: 121ms)
+✓ Compiled in 554ms
+ GET /gift 200 in 326ms (next.js: 222ms, application-code: 104ms)
+ GET /gift 200 in 138ms (next.js: 6ms, application-code: 132ms)
+ GET /gift 200 in 71ms (next.js: 7ms, application-code: 64ms)
+✓ Compiled in 351ms
+ GET /gift 200 in 290ms (next.js: 173ms, application-code: 117ms)
