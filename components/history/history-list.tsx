@@ -24,6 +24,7 @@ export default function HistoryList() {
   const [loading, setLoading] = useState(true);
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const [error, setError] = useState("");
+  const hasSetupError = error.toLowerCase().includes("setup is incomplete");
 
   useEffect(() => {
     async function load() {
@@ -47,34 +48,65 @@ export default function HistoryList() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-[linear-gradient(135deg,#f8fafc_0%,#fff7ed_48%,#fdf2f8_100%)] px-4 py-8 text-stone-950 sm:px-6 lg:px-8">
+    <main className="min-h-screen bg-[linear-gradient(135deg,#f8fafc_0%,#fffaf5_52%,#eef6ff_100%)] px-4 py-6 text-stone-950 sm:px-6 lg:px-8">
       <section className="mx-auto max-w-6xl">
-        <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="eyebrow">Gift memory archive</p>
-            <h1 className="mt-2 max-w-3xl text-[2.35rem] font-black leading-[1.06] tracking-tight sm:text-[4rem]">
-              Your private gift history.
-            </h1>
-            <p className="mt-4 max-w-2xl text-base leading-8 text-stone-600 sm:text-lg">
-              Revisit saved reads, gift notes, and the emotional reasoning behind each idea.
+        <div className="mb-6 rounded-[2rem] border border-white/80 bg-white/70 p-5 shadow-xl shadow-black/5 backdrop-blur sm:p-6">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-black uppercase text-stone-500">
+                Gift memory archive
+              </p>
+              <h1 className="mt-2 text-3xl font-black leading-tight tracking-tight text-stone-950 sm:text-4xl">
+                Private gift history
+              </h1>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-stone-600 sm:text-base">
+                Review saved recommendations by person, relationship, occasion, and emotional direction.
+              </p>
+            </div>
+            <Link
+              href="/gift"
+              className="inline-flex justify-center rounded-2xl bg-stone-950 px-5 py-3 text-sm font-black text-white shadow-xl shadow-black/15 transition hover:-translate-y-0.5 hover:bg-stone-800"
+            >
+              New gift read
+            </Link>
+          </div>
+        </div>
+
+        <div className="mb-6 grid gap-3 sm:grid-cols-3">
+          <div className="rounded-2xl border border-white/80 bg-white/70 p-4 shadow-lg shadow-black/5">
+            <p className="text-xs font-black uppercase text-stone-400">
+              Saved reads
+            </p>
+            <p className="mt-2 text-2xl font-black text-stone-950">
+              {items.length}
             </p>
           </div>
-          <Link
-            href="/gift"
-            className="rounded-2xl bg-stone-950 px-5 py-4 text-center font-bold text-white shadow-xl shadow-black/15"
-          >
-            New gift read
-          </Link>
+          <div className="rounded-2xl border border-white/80 bg-white/70 p-4 shadow-lg shadow-black/5">
+            <p className="text-xs font-black uppercase text-stone-400">
+              Privacy
+            </p>
+            <p className="mt-2 text-sm font-bold text-stone-700">
+              {hasSetupError ? "Setup needed" : signedIn ? "Account scoped" : "Sign in required"}
+            </p>
+          </div>
+          <div className="rounded-2xl border border-white/80 bg-white/70 p-4 shadow-lg shadow-black/5">
+            <p className="text-xs font-black uppercase text-stone-400">
+              Next step
+            </p>
+            <p className="mt-2 text-sm font-bold text-stone-700">
+              {items.length ? "Review or delete reads" : "Create first read"}
+            </p>
+          </div>
         </div>
 
         {signedIn === false && (
-          <div className="rounded-[2rem] border border-white/70 bg-white/75 p-8 text-center shadow-xl shadow-black/5">
+          <div className="rounded-[2rem] border border-white/80 bg-white/80 p-8 text-center shadow-xl shadow-black/5">
             <h2 className="text-2xl font-black">Sign in to view history</h2>
             <p className="mx-auto mt-3 max-w-md leading-7 text-stone-600">
               Gift history is private and only visible to the account that created it.
             </p>
             <Link
-              href="/auth?next=/history"
+              href="/auth/signin?next=/history"
               className="mt-6 inline-flex rounded-2xl bg-stone-950 px-5 py-4 font-bold text-white"
             >
               Sign in
@@ -82,20 +114,37 @@ export default function HistoryList() {
           </div>
         )}
 
-        {error && (
-          <div className="mb-5 rounded-[1.5rem] bg-rose-50 p-4 text-sm font-semibold text-rose-700">
+        {hasSetupError && (
+          <div className="rounded-[2rem] border border-amber-200 bg-amber-50/90 p-6 shadow-xl shadow-amber-900/5">
+            <p className="text-xs font-black uppercase text-amber-700">
+              Production setup required
+            </p>
+            <h2 className="mt-2 text-2xl font-black text-stone-950">
+              Private history is not connected yet.
+            </h2>
+            <p className="mt-3 max-w-2xl leading-7 text-stone-700">
+              The app is protecting history instead of showing unscoped records. Apply the Supabase migration so every recommendation has a user owner and Row Level Security can filter records correctly.
+            </p>
+            <code className="mt-5 block rounded-2xl bg-white/80 p-4 text-sm font-bold text-stone-700">
+              database/2026-05-28-auth-rls.sql
+            </code>
+          </div>
+        )}
+
+        {error && !hasSetupError && (
+          <div className="mb-5 rounded-2xl border border-rose-100 bg-rose-50 p-4 text-sm font-semibold text-rose-700">
             {error}
           </div>
         )}
 
         {loading && signedIn !== false && (
-          <div className="rounded-[2rem] bg-white/70 p-8 text-stone-600 shadow-xl shadow-black/5">
-            Loading your gift history...
+          <div className="rounded-[2rem] border border-white/80 bg-white/70 p-8 text-stone-600 shadow-xl shadow-black/5">
+            Loading your private history...
           </div>
         )}
 
-        {!loading && signedIn && items.length === 0 && (
-          <div className="rounded-[2rem] border border-white/70 bg-white/70 p-8 text-center shadow-xl shadow-black/5">
+        {!loading && signedIn && !error && items.length === 0 && (
+          <div className="rounded-[2rem] border border-white/80 bg-white/80 p-8 text-center shadow-xl shadow-black/5">
             <h2 className="text-2xl font-black">No gift reads yet</h2>
             <p className="mx-auto mt-3 max-w-md leading-7 text-stone-600">
               Start with one person and Gift Glimpse will save the emotional direction here.
@@ -116,7 +165,7 @@ export default function HistoryList() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.04, duration: 0.28 }}
-                className="grid gap-5 rounded-[1.75rem] border border-white/75 bg-white/75 p-5 shadow-xl shadow-black/5 backdrop-blur transition hover:-translate-y-0.5 hover:shadow-2xl sm:p-6 lg:grid-cols-[0.85fr_1.15fr]"
+                className="grid gap-5 rounded-[1.5rem] border border-white/80 bg-white/80 p-5 shadow-xl shadow-black/5 backdrop-blur transition hover:-translate-y-0.5 hover:shadow-2xl sm:p-6 lg:grid-cols-[0.8fr_1.2fr]"
               >
                 <div>
                   <div className="mb-4 flex flex-wrap gap-2">

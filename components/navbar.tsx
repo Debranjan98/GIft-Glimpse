@@ -62,8 +62,8 @@ export default function Navbar() {
               </button>
             </>
           ) : (
-            <Link
-              href="/auth?next=/history"
+          <Link
+              href="/auth/signin?next=/history"
               className="rounded-full px-3 py-2 text-stone-600 transition hover:bg-white hover:text-stone-950"
             >
               Sign in

@@ -82,7 +82,7 @@ export async function fetchGiftHistory() {
     return {
       data: [],
       error: new Error(
-        "Private history is not ready yet. Apply the Supabase migration in database/2026-05-28-auth-rls.sql."
+        "Private history setup is incomplete. Apply the Supabase RLS migration before using history in production."
       ),
     };
   }

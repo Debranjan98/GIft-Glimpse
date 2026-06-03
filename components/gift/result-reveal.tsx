@@ -9,6 +9,7 @@ import {
   getRelationshipProfile,
 } from "@/lib/gift/schema";
 import { getCurrentUser } from "@/lib/supabase/auth";
+import { saveGiftResult } from "@/lib/supabase/queries";
 
 type StoredResult = {
   input: GiftInput;
@@ -33,15 +34,46 @@ export default function ResultReveal() {
   });
   const [refinement, setRefinement] = useState<Refinement | null>(null);
   const [hasUser, setHasUser] = useState<boolean | null>(null);
-  const [hasPendingSave] = useState(() => {
+  const [hasPendingSave, setHasPendingSave] = useState(() => {
     if (typeof window === "undefined") return false;
     return Boolean(window.localStorage.getItem("gift-glimpse-pending-save"));
   });
+  const [saveStatus, setSaveStatus] = useState("");
   const [phase, setPhase] = useState(0);
 
   useEffect(() => {
     getCurrentUser().then((user) => setHasUser(Boolean(user)));
   }, []);
+
+  useEffect(() => {
+    async function savePendingIfReady() {
+      if (!hasUser || !hasPendingSave || !stored) return;
+
+      const raw = window.localStorage.getItem("gift-glimpse-pending-save");
+      if (!raw) {
+        setHasPendingSave(false);
+        return;
+      }
+
+      try {
+        const pending = JSON.parse(raw) as StoredResult;
+        const { error } = await saveGiftResult(pending.input, pending.result);
+
+        if (error) {
+          setSaveStatus("Your recommendation is ready, but saving it failed.");
+          return;
+        }
+
+        window.localStorage.removeItem("gift-glimpse-pending-save");
+        setHasPendingSave(false);
+        setSaveStatus("Saved to your private history.");
+      } catch {
+        setSaveStatus("Your recommendation is ready, but saving it failed.");
+      }
+    }
+
+    savePendingIfReady();
+  }, [hasPendingSave, hasUser, stored]);
 
   useEffect(() => {
     if (phase >= revealSteps.length) return;
@@ -177,13 +209,18 @@ export default function ResultReveal() {
                   </Link>
                 ) : (
                   <Link
-                    href="/auth?next=/result"
+                    href="/auth/signin?next=/result"
                     className="rounded-2xl border border-stone-300 bg-white px-5 py-4 text-center font-bold text-stone-800"
                   >
                     {hasPendingSave ? "Sign in to save" : "Sign in"}
                   </Link>
                 )}
               </div>
+              {saveStatus && (
+                <p className="px-5 pb-5 text-sm font-semibold text-stone-500 sm:px-8">
+                  {saveStatus}
+                </p>
+              )}
             </motion.div>
           )}
         </div>
